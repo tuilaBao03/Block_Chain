@@ -58,10 +58,7 @@ class Peer(DatagramProtocol):
         while True: 
             tuychon = input("khởi tạo nút khởi nguyên: Y/n (diachinguon:Yn,diachinsh:Yh):::")
             if tuychon.lower()=='yh':
-                cangui = "diachinsh"+holder_public
-                self.transport.write(cangui.encode('utf-8'), self.remote_address)
-            elif tuychon.lower()=='yn':
-                cangui = "diachinguon"+MINT_PUBLIC_ADDRESS
+                cangui = "diachinsh"+holder_public+"diachinguon"+MINT_PUBLIC_ADDRESS
                 self.transport.write(cangui.encode('utf-8'), self.remote_address)
 
             else:

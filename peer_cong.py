@@ -29,39 +29,38 @@ class Peer(DatagramProtocol):
 
     def startProtocol(self):
         self.transport.write("sẵn sàng".encode('utf-8'), self.server)
-
+    
     def datagramReceived(self, datagram, addr): 
-        datagram = datagram.decode('utf-8') # thông tin nhận được 
+        holder_public = ""
+        mini_public_address = ""
+        datagram = datagram.decode('utf-8') # Convert received data to string
         if addr == self.server:
-            print(" Chọn Peer để trò chuyện từ danh sách sau:\n", datagram)
+            # Directory server message handling
+            print("Chọn Peer để trò chuyện từ danh sách sau:\n", datagram)
             host = "127.0.0.1"
             port = int(input("Nhập port: "))
-            
-            self.remote_address = host, port  # Cập nhật địa chỉ remote 
+            self.remote_address = host, port  # Update remote address 
             reactor.callInThread(self.send_message)
         else:
-            holder_public=""
-            mini_public_address=""
-            if(datagram.find('diachinsh') !=-1 or datagram.find('diachinguon') !=-1):
-                if(datagram.find('diachinsh') !=-1):
-                    holderKeyPair = datagram.replace('diachinsh','')
-                    print(holderKeyPair)
-                    if(datagram.find('diachinguon') !=-1):
-                        mini_public_address = datagram.replace('diachinguon','')
-                        print(mini_public_address)
-                        node = Blockchain(mini_public_address,holder_public)
-                        print(node.get_balance(holder_public))
-                        
-                else:
-                    print(addr, ":", datagram)
-                    
-            else: print(addr, ":", datagram)
             
-            # mini_public_address = input("Nhập mini_public_address: ")
-            # holderKeyPair = input("điạ chỉ công khai của node khởi nguyên: ")
-            # node = Blockchain(mini_public_address,holderKeyPair);
-
-                
+            
+            if 'diachinsh' in datagram and 'diachinguon' in datagram:
+                holder_public = datagram[9:137]
+                print("Holder public address:", holder_public)
+                mini_public_address = datagram[146:274]
+                print("Mini public address:", mini_public_address)
+                # Create a blockchain instance
+                node = Blockchain(mini_public_address, holder_public)
+                try:
+                    # Try to get the balance
+                    balance = node.get_balance(holder_public)
+                    print("Balance:", balance)
+                except Exception as e:
+                    # Handle any exceptions that occur during the get_balance call
+                    print("Error:", e)
+            else:
+                print("Incomplete address information in the received message:", datagram)
+        
 
     def send_message(self): 
         while True:
