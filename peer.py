@@ -2,6 +2,7 @@ from twisted.internet.protocol import DatagramProtocol
 from twisted.internet import reactor
 from random import randint
 from jechain import Blockchain
+from jechain import Transaction
 from ecdsa import SigningKey, SECP256k1, VerifyingKey # hàm 
 
 # đây là node chủ sở hữu
@@ -10,6 +11,7 @@ from ecdsa import SigningKey, SECP256k1, VerifyingKey # hàm
 ec = SECP256k1
 from ecdsa import SigningKey, SECP256k1
 keyPair = SigningKey.generate(curve=ec)
+
 holderKeyPair = SigningKey.generate(curve=ec)
 holder_public = holderKeyPair.get_verifying_key().to_string().hex() # chuyển đầu tiên
 
@@ -31,8 +33,8 @@ class Peer(DatagramProtocol):
         print("Máy đang hoạt động trên địa chỉ: ", self.local_address)
         print("Node có địa chỉ công khai là : ", self.public_key)
         #khai báo blockchain 
-        node = Blockchain(MINT_PUBLIC_ADDRESS,holder_public)
-        print("Số dư của bạn: ", node.get_balance(holder_public))
+        self.node = Blockchain(MINT_PUBLIC_ADDRESS,holder_public)
+        print("Số dư của bạn: ", self.node.get_balance(holder_public))
     def startProtocol(self):
         self.transport.write("sẵn sàng".encode('utf-8'), self.server)
 
@@ -43,9 +45,50 @@ class Peer(DatagramProtocol):
             host = "127.0.0.1"
             port = int(input("Nhập port: "))
             self.remote_address = host, port  # Cập nhật địa chỉ remote 
-            reactor.callInThread(self.send_message())
+            reactor.callInThread(self.send_message)
             
         else: 
+            if('diachicuavinguoicanchuyen' in datagram):
+                cong_public = datagram[26:(128+26)]
+                transaction = Transaction(
+                        holder_public,
+                        cong_public,
+                        1
+                )
+                transaction.sign(holderKeyPair)
+
+                # Thêm giao dịch vào Blockchain
+                self.node.add_transaction(transaction,MINT_PUBLIC_ADDRESS)
+
+                # Khai thác giao dịch bằng địa chỉ của Công
+                self.node.mine_transactions(cong_public,MINT_KEY_PAIR)
+                cangui = "chuyentien"+holder_public
+                self.transport.write(cangui.encode('utf-8'), self.remote_address)
+
+                    # In số dư của các tài khoản liên quan
+                print("Số dư của bạn: ", self.node.get_balance(holder_public))
+                
+                # for i in range (10000) : 
+                #     transaction = Transaction(
+                #         holder_public,
+                #         cong_public,
+                #         1
+                #     )
+                #     transaction.sign(holderKeyPair)
+
+                #     # Thêm giao dịch vào Blockchain
+                #     self.node.add_transaction(transaction,MINT_PUBLIC_ADDRESS)
+
+                #     # Khai thác giao dịch bằng địa chỉ của Công
+                #     self.node.mine_transactions(cong_public,MINT_KEY_PAIR)
+
+                #     # In số dư của các tài khoản liên quan
+                # print("Số dư của bạn: ", self.node.get_balance(holder_public))
+                # print("Số dư của Công: ", self.node.get_balance(cong_public))    
+                    
+
+
+            else: 
                 print(addr, ":", datagram)
 
     def send_message(self): 
@@ -56,22 +99,25 @@ class Peer(DatagramProtocol):
         
        
         while True: 
-            tuychon = input("khởi tạo nút khởi nguyên: Y/n (diachinguon:Yn,diachinsh:Yh):::")
-            if tuychon.lower()=='yh':
+            print("khởi tạo nút khởi nguyên:( Y/n ):::")
+            message = input("chuyển ::: ")
+            if message.lower()=='y':
                 cangui = "diachinsh"+holder_public+"diachinguon"+MINT_PUBLIC_ADDRESS
                 self.transport.write(cangui.encode('utf-8'), self.remote_address)
+            elif message.lower()=='chuyentien':
+                cangui = ""
 
             else:
-                message = input("::: ")
+                
                 if message.lower() == 'exit':
                     self.transport.write("Mất kết nối".encode('utf-8'), self.remote_address)
                     self.transport.write('exit'.encode('utf-8'), self.server)
-
                     reactor.stop()
                     break
                 else:
                     
                     self.transport.write(message.encode('utf-8'), self.remote_address)
+                    print("da chuyen ")
                 
     
             

@@ -54,12 +54,12 @@ class Blockchain:
         from_address = mint_pulic_address
         to_address = holderKeyPair_address
         
-        phathanhcoin = Transaction(from_address, to_address, 10000)
+        phathanhcoin = Transaction(from_address, to_address, 100000)
         self.chain = [Block(datetime.now().strftime("%m/%d/%Y, %H:%M:%S"), [phathanhcoin.__dict__])]
         self.difficulty = 1
         self.blockTime = 30000
         self.transactions = []
-        self.reward = 2003
+        self.reward = 100
 
     def get_last_block(self):
         return self.chain[-1]
@@ -117,7 +117,7 @@ class Transaction:
         if key_pair.get_verifying_key().to_string().hex() == self.from_address:
             # Chữ ký được tạo ở định dạng DER và chuyển sang hex
             self.signature = key_pair.sign(SHA256(self.from_address + self.to + str(self.amount)).encode()).hex()
-            print("Signature is: " + self.signature)
+            
     def is_valid(self, tx, chain,mini_public_address):
         if not tx.from_address or not tx.to or tx.amount <= 0:
             return False
