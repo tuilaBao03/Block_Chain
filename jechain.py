@@ -117,6 +117,7 @@ class Transaction:
         if key_pair.get_verifying_key().to_string().hex() == self.from_address:
             # Chữ ký được tạo ở định dạng DER và chuyển sang hex
             self.signature = key_pair.sign(SHA256(self.from_address + self.to + str(self.amount)).encode()).hex()
+        return self.signature
             
     def is_valid(self, tx, chain,mini_public_address):
         if not tx.from_address or not tx.to or tx.amount <= 0:

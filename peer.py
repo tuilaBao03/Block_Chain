@@ -48,23 +48,21 @@ class Peer(DatagramProtocol):
             reactor.callInThread(self.send_message)
             
         else: 
-            if('diachicuavinguoicanchuyen' in datagram):
+            if('diachicuavinguoicanchuyen' in datagram): # nhận địa chỉ của công để tạo transaction chuyển tiền 
                 cong_public = datagram[26:(128+26)]
-                transaction = Transaction(
-                        holder_public,
-                        cong_public,
-                        1
-                )
-                transaction.sign(holderKeyPair)
-
-                # Thêm giao dịch vào Blockchain
-                self.node.add_transaction(transaction,MINT_PUBLIC_ADDRESS)
-
-                # Khai thác giao dịch bằng địa chỉ của Công
-                self.node.mine_transactions(cong_public,MINT_KEY_PAIR)
-                cangui = "chuyentien"+holder_public
-                self.transport.write(cangui.encode('utf-8'), self.remote_address)
-
+                for i in range(10000):
+                    transaction = Transaction(
+                            holder_public,
+                            cong_public,
+                            1
+                    )
+                    transaction.sign(holderKeyPair)
+                    # Thêm giao dịch vào Blockchain
+                    self.node.add_transaction(transaction,MINT_PUBLIC_ADDRESS)
+                    # Khai thác giao dịch bằng địa chỉ của Công
+                    self.node.mine_transactions(cong_public,MINT_KEY_PAIR)
+                    cangui = "chuyentien"+holder_public
+                    self.transport.write(cangui.encode('utf-8'), self.remote_address)
                     # In số dư của các tài khoản liên quan
                 print("Số dư của bạn: ", self.node.get_balance(holder_public))
                 
@@ -99,10 +97,13 @@ class Peer(DatagramProtocol):
         
        
         while True: 
+        # gửi địa chủ nguồn và địa chỉ chủ sở hữu đầu tiên để phục vụ lần phát hành coin
+        # ứng với mỗi node lần đầu connection thì node chủ sẽ gửi địa chủ public của nó và địa chỉ public của nguồn phát hành để khởi tạo blockchain
             print("khởi tạo nút khởi nguyên:( Y/n ):::")
             message = input("chuyển ::: ")
             if message.lower()=='y':
-                cangui = "diachinsh"+holder_public+"diachinguon"+MINT_PUBLIC_ADDRESS
+                # tạo 1 tin nhắn gồm 2 khóa 
+                cangui = "diachinsh"+holder_public+"diachinguon"+MINT_PUBLIC_ADDRESS 
                 self.transport.write(cangui.encode('utf-8'), self.remote_address)
             elif message.lower()=='chuyentien':
                 cangui = ""
