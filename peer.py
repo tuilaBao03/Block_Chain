@@ -3,6 +3,7 @@ from twisted.internet import reactor
 from random import randint
 from jechain import Blockchain
 from jechain import Transaction
+import time
 from ecdsa import SigningKey, SECP256k1, VerifyingKey # hàm 
 
 # đây là node chủ sở hữu
@@ -31,10 +32,10 @@ class Peer(DatagramProtocol):
         self.remote_address = None  # Địa chỉ của peer mà bạn muốn kết nối đến
         self.public_key = public_key # địa chỉ public key để dùng
         print("Máy đang hoạt động trên địa chỉ: ", self.local_address)
-        print("Node có địa chỉ công khai là : ", self.public_key)
+        #print("Node có địa chỉ công khai là : ", self.public_key)
         #khai báo blockchain 
         self.node = Blockchain(MINT_PUBLIC_ADDRESS,holder_public)
-        print("Số dư của bạn: ", self.node.get_balance(holder_public))
+        #print("Số dư của bạn: ", self.node.get_balance(holder_public))
     def startProtocol(self):
         self.transport.write("sẵn sàng".encode('utf-8'), self.server)
 
@@ -50,13 +51,17 @@ class Peer(DatagramProtocol):
         else: 
             if('diachicuavinguoicanchuyen' in datagram): # nhận địa chỉ của công để tạo transaction chuyển tiền 
                 cong_public = datagram[26:(128+26)]
-                for i in range(10000):
+                start_time = time.time()
+                for i in range(100):
+
+                    print("chuyen")
                     transaction = Transaction(
                             holder_public,
                             cong_public,
                             1
                     )
                     transaction.sign(holderKeyPair)
+                    print("chuyen lan "+str(i))
                     # Thêm giao dịch vào Blockchain
                     self.node.add_transaction(transaction,MINT_PUBLIC_ADDRESS)
                     # Khai thác giao dịch bằng địa chỉ của Công
@@ -64,25 +69,12 @@ class Peer(DatagramProtocol):
                     cangui = "chuyentien"+holder_public
                     self.transport.write(cangui.encode('utf-8'), self.remote_address)
                     # In số dư của các tài khoản liên quan
+                    print("Số dư của bạn: ", self.node.get_balance(holder_public))
+                end_time = time.time()
                 print("Số dư của bạn: ", self.node.get_balance(holder_public))
+                print("thời gian : "+str(end_time-start_time))
                 
-                # for i in range (10000) : 
-                #     transaction = Transaction(
-                #         holder_public,
-                #         cong_public,
-                #         1
-                #     )
-                #     transaction.sign(holderKeyPair)
 
-                #     # Thêm giao dịch vào Blockchain
-                #     self.node.add_transaction(transaction,MINT_PUBLIC_ADDRESS)
-
-                #     # Khai thác giao dịch bằng địa chỉ của Công
-                #     self.node.mine_transactions(cong_public,MINT_KEY_PAIR)
-
-                #     # In số dư của các tài khoản liên quan
-                # print("Số dư của bạn: ", self.node.get_balance(holder_public))
-                # print("Số dư của Công: ", self.node.get_balance(cong_public))    
                     
 
 

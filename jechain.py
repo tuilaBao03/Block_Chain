@@ -82,9 +82,9 @@ class Blockchain:
         current_time = datetime.now().timestamp()
         last_block_time = datetime.strptime(self.get_last_block().timestamp, "%m/%d/%Y, %H:%M:%S").timestamp()
         if current_time - last_block_time < self.blockTime:
-            self.difficulty += 1
+            self.difficulty += 0
         else:
-            self.difficulty -= 1
+            self.difficulty -= 0
 
     def add_transaction(self, transaction,mini_public_address):
         if transaction.is_valid(transaction, self,mini_public_address):

@@ -28,7 +28,7 @@ class Peer(DatagramProtocol):
         self.public_key = public_key # địa chỉ public key để dùng
         self.node = Blockchain(mini_public_address, holder_public)  # Khởi tạo node là None
         print("Máy đang hoạt động trên địa chỉ: ", self.local_address)
-        print("Node có địa chỉ công khai là : ", self.public_key)        
+        #print("Node có địa chỉ công khai là : ", self.public_key)        
 
     def startProtocol(self):
         self.transport.write("sẵn sàng".encode('utf-8'), self.server)
@@ -48,13 +48,13 @@ class Peer(DatagramProtocol):
             # nhận địa chủ nguồn và địa chỉ chủ sở hữu đầu tiên từ node khỏi nguyên để phục vụ khởi tạo blocktrain
             if 'diachinsh' in datagram and 'diachinguon' in datagram: # khi xác định là tin chứa khóa
                 holder_public = datagram[9:137] # lấy theo vị trí
-                print("Holder public address:", holder_public)
+                #print("Holder public address:", holder_public)
                 mini_public_address = datagram[146:274]
-                print("Mini public address:", mini_public_address)
+                #print("Mini public address:", mini_public_address)
                 # Create a blockchain instance
                 self.node = Blockchain(mini_public_address, holder_public) # khơi tạo blockchain
-                balance = self.node.get_balance(holder_public)
-                print("Balance:", balance)
+                #balance = self.node.get_balance(holder_public)
+                #print("Balance:", balance)
             elif 'chuyentien' in datagram:
                 holder_public = datagram[10:(128+10)]
                 transaction = Transaction(
