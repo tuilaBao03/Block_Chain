@@ -52,7 +52,7 @@ class Peer(DatagramProtocol):
             if('diachicuavinguoicanchuyen' in datagram): # nhận địa chỉ của công để tạo transaction chuyển tiền 
                 cong_public = datagram[26:(128+26)]
                 start_time = time.time()
-                for i in range(100):
+                for i in range(1000):
 
                     print("chuyen")
                     transaction = Transaction(
