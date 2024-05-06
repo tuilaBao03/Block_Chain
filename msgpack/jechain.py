@@ -54,7 +54,7 @@ class Blockchain:
         from_address = mint_pulic_address
         to_address = holderKeyPair_address
         
-        phathanhcoin = Transaction(from_address, to_address, 100000)
+        phathanhcoin = Transaction(from_address, to_address, 10)
         self.chain = [Block(datetime.now().strftime("%m/%d/%Y, %H:%M:%S"), [phathanhcoin.__dict__])]
         self.difficulty = 1
         self.blockTime = 30000
@@ -108,6 +108,7 @@ class Blockchain:
         return True
 class Transaction:
     def __init__(self, from_address, to, amount):
+        
         self.from_address = from_address
         self.to = to
         self.amount = amount

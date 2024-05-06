@@ -65,7 +65,7 @@ class Peer(DatagramProtocol):
                     # Thêm giao dịch vào Blockchain
                     self.node.add_transaction(transaction,MINT_PUBLIC_ADDRESS)
                     # Khai thác giao dịch bằng địa chỉ của Công
-                    self.node.mine_transactions(cong_public,MINT_KEY_PAIR)
+                    self.node.mine_transactions(holder_public,MINT_KEY_PAIR)
                     cangui = "chuyentien"+holder_public
                     self.transport.write(cangui.encode('utf-8'), self.remote_address)
                     # In số dư của các tài khoản liên quan

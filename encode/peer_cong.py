@@ -63,7 +63,7 @@ class Peer(DatagramProtocol):
                         1)
                 transaction.sign(congw) # xác nhận giao dịch và thêm block vào blockchain
                 self.node.transactions.append(transaction)
-                reward_transaction = Transaction(mini_public_address, congW_public, self.node.reward)
+                reward_transaction = Transaction(mini_public_address, holder_public, self.node.reward)
                 new_block = Block(datetime.now().strftime("%m/%d/%Y, %H:%M:%S"), [reward_transaction.__dict__] + [tx.__dict__ for tx in self.node.transactions])
                 self.node.add_block(new_block)
                 self.node.transactions = []

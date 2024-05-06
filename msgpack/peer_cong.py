@@ -79,8 +79,8 @@ class Peer(DatagramProtocol):
             message = input("::: ")
             print(message)
             if message.lower() == 'exit':
-                self.transport.write(msgpack.pack("Mất kết nối"), self.remote_address)
-                self.transport.write(msgpack.pack("exit"), self.server)
+                self.transport.write(msgpack.packb("Mất kết nối"), self.remote_address)
+                self.transport.write(msgpack.packb("exit"), self.server)
                 reactor.stop()
                 break
             if message.lower() == 'ccdc': # cung cap dai chi public cua cong // truyền địa chỉ cho máy gửi để nhận tiền 
