@@ -28,7 +28,7 @@ class Peer(DatagramProtocol):
         if host == "localhost": 
             host = "127.0.0.1"
         self.local_address = host, port  # Địa chỉ local của peer này
-        self.server = '127.0.0.1', 9999  # Địa chỉ của Directory Server
+        self.server = '192.168.10.1', 9999  # Địa chỉ của Directory Server
         self.remote_address = None  # Địa chỉ của peer mà bạn muốn kết nối đến
         self.public_key = public_key # địa chỉ public key để dùng
         print("Máy đang hoạt động trên địa chỉ: ", self.local_address)
@@ -43,7 +43,7 @@ class Peer(DatagramProtocol):
         datagram = datagram.decode('utf-8') # thông tin nhận được 
         if addr == self.server:
             print(" Chọn Peer để trò chuyện từ danh sách sau:\n", datagram)
-            host = "127.0.0.1"
+            host = input("nhập host: ")
             port = int(input("Nhập port: "))
             self.remote_address = host, port  # Cập nhật địa chỉ remote 
             reactor.callInThread(self.send_message)
@@ -64,7 +64,7 @@ class Peer(DatagramProtocol):
                     print("chuyen lan "+str(i))
                     # Thêm giao dịch vào Blockchain
                     self.node.add_transaction(transaction,MINT_PUBLIC_ADDRESS)
-                    # Khai thác giao dịch bằng địa chỉ của Công
+                    # Khai thác giao dịch bằng địa chỉ của tôi
                     self.node.mine_transactions(holder_public,MINT_KEY_PAIR)
                     cangui = "chuyentien"+holder_public
                     self.transport.write(cangui.encode('utf-8'), self.remote_address)
@@ -118,6 +118,6 @@ class Peer(DatagramProtocol):
             
 if __name__ == '__main__':
     port = randint(1000,5000)
-    reactor.listenUDP(port, Peer('localhost', port,holder_public))
+    reactor.listenUDP(port, Peer('192.168.10.1', port,holder_public))
     reactor.run()
     

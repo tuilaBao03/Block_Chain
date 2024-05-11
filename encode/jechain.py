@@ -109,7 +109,7 @@ class Blockchain:
 import time
 class Transaction:
     def __init__(self, from_address, to, amount):
-        time.sleep(0.003)
+        
         self.from_address = from_address
         self.to = to
         self.amount = amount

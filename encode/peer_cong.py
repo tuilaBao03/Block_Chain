@@ -23,7 +23,7 @@ class Peer(DatagramProtocol):
         holder_public = ""
         mini_public_address = ""
         self.local_address = host, port  # Địa chỉ local của peer này
-        self.server = '127.0.0.1', 9999  # Địa chỉ của Directory Server
+        self.server = '192.168.226.59', 9999  # Địa chỉ của Directory Server
         self.remote_address = None  # Địa chỉ của peer mà bạn muốn kết nối đến
         self.public_key = public_key # địa chỉ public key để dùng
         self.node = Blockchain(mini_public_address, holder_public)  # Khởi tạo node là None
@@ -34,13 +34,14 @@ class Peer(DatagramProtocol):
         self.transport.write("sẵn sàng".encode('utf-8'), self.server)
     
     def datagramReceived(self, datagram, addr): 
+        i=0
         holder_public = ""
         mini_public_address = ""
         datagram = datagram.decode('utf-8') # Convert received data to string
         if addr == self.server:
             # Directory server message handling
             print("Chọn Peer để trò chuyện từ danh sách sau:\n", datagram)
-            host = "127.0.0.1"
+            host = input("Nhập host: ")
             port = int(input("Nhập port: "))
             self.remote_address = host, port  # Update remote address 
             reactor.callInThread(self.send_message)
@@ -56,6 +57,7 @@ class Peer(DatagramProtocol):
                 #balance = self.node.get_balance(holder_public)
                 #print("Balance:", balance)
             elif 'chuyentien' in datagram:
+                i=i+1;
                 holder_public = datagram[10:(128+10)]
                 transaction = Transaction(
                         holder_public,
@@ -68,6 +70,8 @@ class Peer(DatagramProtocol):
                 self.node.add_block(new_block)
                 self.node.transactions = []
                 # self.node.mine_transactions(congW_public,MINT_KEY_PAIR)
+                
+                print("nhận lần "+str(i))
                 print("Số dư của bạn: ", self.node.get_balance(congW_public))
             else:
                 if(len(datagram)>0):
@@ -91,5 +95,5 @@ class Peer(DatagramProtocol):
                 print("da gui")
 if __name__ == '__main__':
     port = randint(1000,5000)
-    reactor.listenUDP(port, Peer('localhost', port,congW_public))
+    reactor.listenUDP(port, Peer('192.168.10.1', port,congW_public))
     reactor.run()

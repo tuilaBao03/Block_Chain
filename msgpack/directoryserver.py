@@ -4,7 +4,6 @@ import msgpack
 class DirectoryServer(DatagramProtocol):
     def __init__(self):
         self.peers = set()
-
     def datagramReceived(self, datagram, addr):
         datagram = msgpack.unpackb(datagram)
         if datagram == "sẵn sàng":
