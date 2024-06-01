@@ -1,5 +1,6 @@
 from twisted.internet.protocol import DatagramProtocol
 from twisted.internet import reactor
+from typing import Union
 
 class DirectoryServer(DatagramProtocol):
     def __init__(self):
